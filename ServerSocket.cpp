@@ -96,10 +96,9 @@ void delete_client(int ws) {
 	}
 }
 
-// 全体チャット用
 void talks(int ws)
 {
-	int i, len;
+	int len;
 	char buf[512];
 
 	if ((len = recv(ws, &buf, sizeof(buf), 0)) == -1) {
@@ -113,15 +112,13 @@ void talks(int ws)
 		return ;
 	}
 
-	fprintf(stderr, "[clients%d]%s\n", clients_no, buf);
-	strcat(buf, ": OK\r\n");
 	buf[len] = '\0';
-	fprintf(stderr, "%s", buf);
+	fprintf(stderr, "[clients%d]%s\n", clients_no, buf);
 
 	len = strlen(buf);
-
-	for (i = 0; i < clients_no; i++)
-		send(clients[i], buf, len, 0);
+	printf("%s", buf);
+	//for (i = 0; i < clients_no; i++)
+	//send(ws, buf, len, 0);
 }
 
 int recvRequestMessage(int soc, char *request_message, unsigned int buf_size)
