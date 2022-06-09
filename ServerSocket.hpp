@@ -19,19 +19,17 @@
 class ServerSocket
 {
     public:
-        ServerSocket();
-		ServerSocket(int domain, int type, int protocol);
+		//ServerSocket(int domain, int type, int protocol);
 		ServerSocket(std::string portnm);
-		int bind(std::string ip, std::string port);
-		int listen(int max_queue);
-		int accept();
+		//int bind(std::string ip, std::string port);
+		//int listen(int max_queue);
+		//int accept();
 		int shutdown();
 		void close();
 
 		int getSock();
-
-
 		//int connect(std::string ip, std::string port);
+		int AcceptLoopSelect();
 
         ~ServerSocket();
         ServerSocket(ServerSocket const &other);
@@ -41,9 +39,8 @@ class ServerSocket
 		int sock;
 		std::string address;
 		std::string port;
-		struct sockaddr_in sa;
+		//struct sockaddr_in sa;
 };
 
 		
-int AcceptLoop(int soc);
 #endif

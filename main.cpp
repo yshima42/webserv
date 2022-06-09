@@ -5,7 +5,7 @@
 int main() {
 	ServerSocket s("4242");
 
-	AcceptLoop(s.getSock());
+	s.AcceptLoopSelect();
 	s.shutdown();
 	s.close();
 }
