@@ -37,10 +37,8 @@ class ServerSocket
 		void httpServer(int ws);
 		void delete_client(int ws);
 		int recvRequestMessage(int ws);
-		int createResponseMessage(char *response_message);
-		int sendResponseMessage(int ws, char *response_message, unsigned int message_size);
 
-		int createResponseMessage();
+		int createResponseMessage(int status, char *header, char *body, unsigned int body_size);
 		int sendResponseMessage(int ws);
 
         ~ServerSocket();

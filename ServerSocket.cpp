@@ -102,13 +102,38 @@ void ServerSocket::delete_client(int ws) {
 
 
 
-int ServerSocket::createResponseMessage()
+int ServerSocket::createResponseMessage(int status, char *header, char *body, unsigned int body_size)
 {
-	sprintf(response_message, "HTTP/2.1 200 OK\r\nContent-Type: text/html\r\n<html><body>aaa</body></html>\r\n");
-	response_size = strlen(response_message);
+	unsigned int no_body_len;
+	unsigned int body_len;
+	
+	response_message[0] = '\0';
 
-	return 0;
+    if (status == 200) {
+        /* レスポンス行とヘッダーフィールドの文字列を作成 */
+        sprintf(response_message, "HTTP/1.1 200 OK\r\n%s\r\n", header);
+
+        no_body_len = strlen(response_message);
+        body_len = body_size;
+		printf("body_len: %d\n", body_len);
+
+        /* ヘッダーフィールドの後ろにボディをコピー */
+        memcpy(&response_message[no_body_len], body, body_len);
+    } else if (status == 404) {
+        /* レスポンス行とヘッダーフィールドの文字列を作成 */
+        sprintf(response_message, "HTTP/1.1 404 Not Found\r\n%s\r\n", header);
+
+        no_body_len = strlen(response_message);
+        body_len = 0;
+    } else {
+        /* statusが200・404以外はこのプログラムで非サポート */
+        printf("Not support status(%d)\n", status);
+        return -1;
+    }
+
+    return no_body_len + body_len;
 }
+
 
 int ServerSocket::sendResponseMessage(int ws)
 {
@@ -117,10 +142,54 @@ int ServerSocket::sendResponseMessage(int ws)
 }
 
 
+unsigned int getFileSize(const char *path) {
+    int size, read_size;
+    char read_buf[SIZE];
+    FILE *f;
+
+    f = fopen(path, "rb");
+    if (f == NULL) {
+        return 0;
+    }
+
+    size = 0;
+    do {
+        read_size = fread(read_buf, 1, SIZE, f);
+        size += read_size;
+    } while(read_size != 0);
+
+    fclose(f);
+
+    return size;
+}
+
+int getProcessing(char *body, char *file_path) {
+
+    FILE *f;
+    int file_size;
+
+    file_size = getFileSize(file_path);
+    if (file_size == 0) {
+        printf("getFileSize error\n");
+        return 404;
+    }
+
+    f = fopen(file_path, "r");
+    fread(body, 1, file_size, f);
+    fclose(f);
+
+    return 200;
+}
+
 //ここがコネクタになる
 void ServerSocket::httpServer(int ws)
 {
+	int status;
 	HTTPRequest req(ws);
+	char body[SIZE];
+	char target[SIZE];
+	unsigned int file_size;
+	char header_field[SIZE];
 
 	printf("ws: %d\n", req.get_ws());
 
@@ -132,8 +201,21 @@ void ServerSocket::httpServer(int ws)
 	}
 	req.perseRequestMessage();
 
+	strcpy(target, "./index.html");
 
-	createResponseMessage();
+	if (strcmp(req.get_method(), "GET") == 0) {
+		status = getProcessing(body, target);
+	} else {
+		status = 400;
+	}
+
+	file_size = getFileSize(&target[1]);
+	file_size = strlen(body);
+	sprintf(header_field, "Content-Length: %u\r\n", file_size);
+
+	printf("%s\n", response_message);
+	response_size = createResponseMessage(status, header_field, body, file_size);
+	printf("%s\n", response_message);
 	sendResponseMessage(ws);
 
 	//printf("%s", buf);
