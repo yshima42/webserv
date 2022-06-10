@@ -29,6 +29,11 @@ class HTTPRequest
 		int recvRequestMessage();
 		int perseRequestMessage();
 
+		int get_ws();
+		char *get_method();
+		char *get_uri();
+		char *get_protocol_version();
+
     private:
 		int _ws;
 		char _request_message[SIZE];

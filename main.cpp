@@ -1,7 +1,6 @@
 #include "ServerSocket.hpp"
 
 
-
 int main() {
 	ServerSocket s("4242");
 

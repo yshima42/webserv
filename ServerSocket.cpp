@@ -102,23 +102,27 @@ void ServerSocket::delete_client(int ws) {
 
 
 
-int ServerSocket::createResponseMessage(char *response_message)
+int ServerSocket::createResponseMessage()
 {
 	sprintf(response_message, "HTTP/2.1 200 OK\r\nContent-Type: text/html\r\n<html><body>aaa</body></html>\r\n");
-	
-	return strlen(response_message);
-}
+	response_size = strlen(response_message);
 
-int ServerSocket::sendResponseMessage(int ws, char *response_message, unsigned int message_size)
-{
-	send(ws, response_message, message_size, 0);
 	return 0;
 }
+
+int ServerSocket::sendResponseMessage(int ws)
+{
+	send(ws, response_message, response_size, 0);
+	return 0;
+}
+
 
 //ここがコネクタになる
 void ServerSocket::httpServer(int ws)
 {
 	HTTPRequest req(ws);
+
+	printf("ws: %d\n", req.get_ws());
 
 	if (req.recvRequestMessage() == -1) {
 		::shutdown(ws, SHUT_RDWR);
@@ -128,11 +132,9 @@ void ServerSocket::httpServer(int ws)
 	}
 	req.perseRequestMessage();
 
-	char response_message[SIZE];
-	int response_size;
 
-	response_size = createResponseMessage(response_message);
-	sendResponseMessage(ws, response_message, response_size);
+	createResponseMessage();
+	sendResponseMessage(ws);
 
 	//printf("%s", buf);
 	//for (i = 0; i < clients_no; i++)

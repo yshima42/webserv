@@ -18,6 +18,7 @@
 
 #include "HTTPRequest.hpp"
 
+
 #define MAX_CLIENTS 20
 class ServerSocket
 {
@@ -39,6 +40,9 @@ class ServerSocket
 		int createResponseMessage(char *response_message);
 		int sendResponseMessage(int ws, char *response_message, unsigned int message_size);
 
+		int createResponseMessage();
+		int sendResponseMessage(int ws);
+
         ~ServerSocket();
         ServerSocket(ServerSocket const &other);
         ServerSocket &operator=(ServerSocket const &other);
@@ -49,6 +53,10 @@ class ServerSocket
 		std::string port;
 		int clients[MAX_CLIENTS];
 		int clients_no;
+
+		char response_message[SIZE];
+		int response_size;
+
 
 
 	//struct sockaddr_in sa;

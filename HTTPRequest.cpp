@@ -58,6 +58,23 @@ int HTTPRequest::perseRequestMessage()
 	return 0;
 }
 
+char *HTTPRequest::get_method()
+{
+	return _method;
+}
+
+char *HTTPRequest::get_uri() {
+	return _uri;
+}
+
+char *HTTPRequest::get_protocol_version() {
+	return _protocol_version;
+}
+
+int HTTPRequest::get_ws() {
+	return _ws;
+}
+
 HTTPRequest::HTTPRequest(HTTPRequest const &other)
 {
     *this = other;
