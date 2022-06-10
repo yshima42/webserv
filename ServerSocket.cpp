@@ -2,11 +2,16 @@
 #include <cstdlib>
 
 ServerSocket::ServerSocket(std::string portnm)
-	:address("127.0.0.1"), port(portnm)
+	:address("127.0.0.1"), port(portnm), clients_no(0)
 {
 	int portno, opt;
 	struct servent *se;
 	struct sockaddr_in my;
+
+	//clients配列初期化
+	for (int i = 0; i < MAX_CLIENTS; i++) {
+		clients[i] = 0;
+	}
 
 	memset((char *)&my, 0, sizeof(my));
 	my.sin_family = AF_INET;
@@ -81,11 +86,8 @@ int SendRecvLoop(int acc)
 	return 0;
 }
 
-#define MAX_CLIENTS 20
-int clients[MAX_CLIENTS] = {0};
-int clients_no = 0;
 
-void delete_client(int ws) {
+void ServerSocket::delete_client(int ws) {
 	int i;
 	for (i = 0; i < clients_no; i++) {
 		if (clients[i] == ws) {
@@ -96,58 +98,82 @@ void delete_client(int ws) {
 	}
 }
 
-void talks(int ws)
+#define SIZE 1024 * 5
+
+int ServerSocket::recvRequestMessage(int ws)
 {
 	int len;
-	char buf[512];
+	char buf[SIZE];
 
 	if ((len = recv(ws, &buf, sizeof(buf), 0)) == -1) {
 		perror("read");
 		exit(1);
 	} else if (len == 0) {
-		shutdown(ws, SHUT_RDWR);
-		close(ws);
-		delete_client(ws);
-		fprintf(stderr, "connection closed on descriptor %d.\n", ws);
-		return ;
+		return -1;
 	}
 
 	buf[len] = '\0';
 	fprintf(stderr, "[clients%d]%s\n", clients_no, buf);
 
 	len = strlen(buf);
-	printf("%s", buf);
+	return 0;
+}
+
+int ServerSocket::createResponseMessage(char *response_message)
+{
+	sprintf(response_message, "HTTP/2.1 200 OK\r\nContent-Type: text/html\r\n<html><body>aaa</body></html>\r\n");
+	
+	return strlen(response_message);
+}
+
+int ServerSocket::sendResponseMessage(int ws, char *response_message, unsigned int message_size)
+{
+	send(ws, response_message, message_size, 0);
+	return 0;
+}
+
+//ここがコネクタになる
+void ServerSocket::httpServer(int ws)
+{
+	char response_message[SIZE];
+	int response_size;
+
+	if (recvRequestMessage(ws) == -1) {
+		::shutdown(ws, SHUT_RDWR);
+		::close(ws);
+		delete_client(ws);
+		fprintf(stderr, "connection closed on descriptor %d.\n", ws);
+	}
+
+	response_size = createResponseMessage(response_message);
+	sendResponseMessage(ws, response_message, response_size);
+
+	//printf("%s", buf);
 	//for (i = 0; i < clients_no; i++)
 	//send(ws, buf, len, 0);
 }
 
-int recvRequestMessage(int soc, char *request_message, unsigned int buf_size)
-{
-	return recv(soc, request_message, buf_size, 0);
-}
 
-#define SIZE 1024 * 5
+/* int httpServer(int soc) */
+/* { */
+/* 	char request_message[SIZE]; */
+/* 	int request_size; */
 
-int httpServer(int soc)
-{
-	char request_message[SIZE];
-	int request_size;
+/* 	while (1) { */
 
-	while (1) {
-
-		request_size = recvRequestMessage(soc, request_message, SIZE);
-		if (request_size == -1) {
-			printf("recvRequestMessage error\n");
-			break;
-		}
-		if (request_size == 0) {
-			printf("connection ended\n");
-			break;
-		}
-		printf("%s", request_message);
-	}
-	return 0;
-}
+/* 		request_size = recvRequestMessage(soc, request_message, SIZE); */
+/* 		if (request_size == -1) { */
+/* 			printf("recvRequestMessage error\n"); */
+/* 			break; */
+/* 		} */
+/* 		if (request_size == 0) { */
+/* 			printf("connection ended\n"); */
+/* 			break; */
+/* 		} */
+/* 		printf("%s", request_message); */
+/* 	} */
+/* 	return 0; */
+/* } */
 
 
 int ServerSocket::AcceptLoopSelect()
@@ -197,8 +223,7 @@ int ServerSocket::AcceptLoopSelect()
 		}
 		for (i = 0; i < clients_no; i++) {
 			if (FD_ISSET(clients[i], &readfds)) {
-				talks(clients[i]);
-				//httpServer(clients[i]);
+				httpServer(clients[i]);
 				break;
 			}
 		}

@@ -16,6 +16,8 @@
 #include <sys/un.h>
 #include <errno.h>
 
+#include "HTTPRequest.hpp"
+#define MAX_CLIENTS 20
 class ServerSocket
 {
     public:
@@ -30,6 +32,11 @@ class ServerSocket
 		int getSock();
 		//int connect(std::string ip, std::string port);
 		int AcceptLoopSelect();
+		void httpServer(int ws);
+		void delete_client(int ws);
+		int recvRequestMessage(int ws);
+		int createResponseMessage(char *response_message);
+		int sendResponseMessage(int ws, char *response_message, unsigned int message_size);
 
         ~ServerSocket();
         ServerSocket(ServerSocket const &other);
@@ -39,7 +46,11 @@ class ServerSocket
 		int sock;
 		std::string address;
 		std::string port;
-		//struct sockaddr_in sa;
+		int clients[MAX_CLIENTS];
+		int clients_no;
+
+
+	//struct sockaddr_in sa;
 };
 
 		
