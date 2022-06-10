@@ -17,6 +17,7 @@
 #include <errno.h>
 
 #include "HTTPRequest.hpp"
+
 #define MAX_CLIENTS 20
 class ServerSocket
 {

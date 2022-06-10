@@ -16,20 +16,26 @@
 #include <sys/un.h>
 #include <errno.h>
 
-
+#define SIZE 1024 * 5
 
 class HTTPRequest
 {
     public:
-        HTTPRequest();
+        HTTPRequest(int ws);
         virtual ~HTTPRequest();
         HTTPRequest(HTTPRequest const &other);
         HTTPRequest &operator=(HTTPRequest const &other);
 
+		int recvRequestMessage();
+		int perseRequestMessage();
+
     private:
-		std::string _method;
-		std::string _uri;
-		std::string _protocol_version;
+		int _ws;
+		char _request_message[SIZE];
+		int _request_size;
+		char * _method;
+		char * _uri;
+		char * _protocol_version;
 };
 
 #endif

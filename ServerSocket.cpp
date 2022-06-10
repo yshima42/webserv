@@ -100,24 +100,7 @@ void ServerSocket::delete_client(int ws) {
 
 #define SIZE 1024 * 5
 
-int ServerSocket::recvRequestMessage(int ws)
-{
-	int len;
-	char buf[SIZE];
 
-	if ((len = recv(ws, &buf, sizeof(buf), 0)) == -1) {
-		perror("read");
-		exit(1);
-	} else if (len == 0) {
-		return -1;
-	}
-
-	buf[len] = '\0';
-	fprintf(stderr, "[clients%d]%s\n", clients_no, buf);
-
-	len = strlen(buf);
-	return 0;
-}
 
 int ServerSocket::createResponseMessage(char *response_message)
 {
@@ -135,15 +118,18 @@ int ServerSocket::sendResponseMessage(int ws, char *response_message, unsigned i
 //ここがコネクタになる
 void ServerSocket::httpServer(int ws)
 {
-	char response_message[SIZE];
-	int response_size;
+	HTTPRequest req(ws);
 
-	if (recvRequestMessage(ws) == -1) {
+	if (req.recvRequestMessage() == -1) {
 		::shutdown(ws, SHUT_RDWR);
 		::close(ws);
 		delete_client(ws);
 		fprintf(stderr, "connection closed on descriptor %d.\n", ws);
 	}
+	req.perseRequestMessage();
+
+	char response_message[SIZE];
+	int response_size;
 
 	response_size = createResponseMessage(response_message);
 	sendResponseMessage(ws, response_message, response_size);
