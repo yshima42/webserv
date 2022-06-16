@@ -30,9 +30,14 @@ class HTTPRequest
 		int perseRequestMessage();
 
 		int get_ws();
+		char *get_request_message();
 		char *get_method();
 		char *get_uri();
 		char *get_protocol_version();
+
+		void set_uri(char * new_uri);
+		
+		void show();
 
     private:
 		int _ws;

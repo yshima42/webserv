@@ -17,6 +17,7 @@
 #include <errno.h>
 
 #include "HTTPRequest.hpp"
+#include "HTTPResponse.hpp"
 
 
 #define MAX_CLIENTS 20

@@ -58,6 +58,26 @@ int HTTPRequest::perseRequestMessage()
 	return 0;
 }
 
+void HTTPRequest::set_uri(char * new_uri) {
+	_uri = strdup(new_uri);	
+}
+
+void HTTPRequest::show()
+{
+	printf("req_mes: %s\n", _request_message);
+	printf("req_size: %d\n", _request_size);
+	printf("ws: %d\n", _ws);
+	printf("method: %s\n", _method);
+	printf("uri: %s\n", _uri);
+	printf("protocol_version: %s\n", _protocol_version);
+
+}
+
+char *HTTPRequest::get_request_message()
+{
+	return _request_message;
+}
+
 char *HTTPRequest::get_method()
 {
 	return _method;

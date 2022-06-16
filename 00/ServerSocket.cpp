@@ -1,5 +1,6 @@
 #include "ServerSocket.hpp"
 #include <cstdlib>
+#include "HTTPResponse.hpp"
 
 ServerSocket::ServerSocket(std::string portnm)
 	:address("127.0.0.1"), port(portnm), clients_no(0)
@@ -53,38 +54,38 @@ ServerSocket::ServerSocket(std::string portnm)
 	}
 }
 
-int SendRecvLoop(int acc)
-{
-	char buf[512], *ptr;
-	int len;
+/* int SendRecvLoop(int acc) */
+/* { */
+/* 	char buf[512], *ptr; */
+/* 	int len; */
 
-	while (1) {
-		if ((len = recv(acc, buf, sizeof(buf), 0)) < 0) {
-				perror("recv");
-				break;
-		}
-		if (len == 0) {
-			fprintf(stderr, "recv:EOF\n");
-			break;
-		}
+/* 	while (1) { */
+/* 		if ((len = recv(acc, buf, sizeof(buf), 0)) < 0) { */
+/* 				perror("recv"); */
+/* 				break; */
+/* 		} */
+/* 		if (len == 0) { */
+/* 			fprintf(stderr, "recv:EOF\n"); */
+/* 			break; */
+/* 		} */
 
-		buf[len] = '\n';
-		if ((ptr = strpbrk(buf, "\r\n")) != NULL) {
-			*ptr = '\0';
-		}
+/* 		buf[len] = '\n'; */
+/* 		if ((ptr = strpbrk(buf, "\r\n")) != NULL) { */
+/* 			*ptr = '\0'; */
+/* 		} */
 
-		fprintf(stderr, "[client]%s\n", buf);
+/* 		fprintf(stderr, "[client]%s\n", buf); */
 
-		strcat(buf, ":OK\r\n");
-		len = strlen(buf);
+/* 		strcat(buf, ":OK\r\n"); */
+/* 		len = strlen(buf); */
 
-		if ((len = send(acc, buf, len, 0)) < 0) {
-				perror("send");
-				break;
-		}
-	}
-	return 0;
-}
+/* 		if ((len = send(acc, buf, len, 0)) < 0) { */
+/* 				perror("send"); */
+/* 				break; */
+/* 		} */
+/* 	} */
+/* 	return 0; */
+/* } */
 
 
 void ServerSocket::delete_client(int ws) {
@@ -100,8 +101,6 @@ void ServerSocket::delete_client(int ws) {
 
 #define SIZE 1024 * 5
 
-
-
 int ServerSocket::createResponseMessage(int status, char *header, char *body, unsigned int body_size)
 {
 	unsigned int no_body_len;
@@ -115,7 +114,6 @@ int ServerSocket::createResponseMessage(int status, char *header, char *body, un
 
         no_body_len = strlen(response_message);
         body_len = body_size;
-		printf("body_len: %d\n", body_len);
 
         /* ヘッダーフィールドの後ろにボディをコピー */
         memcpy(&response_message[no_body_len], body, body_len);
@@ -142,80 +140,41 @@ int ServerSocket::sendResponseMessage(int ws)
 }
 
 
-unsigned int getFileSize(const char *path) {
-    int size, read_size;
-    char read_buf[SIZE];
-    FILE *f;
 
-    f = fopen(path, "rb");
-    if (f == NULL) {
-        return 0;
-    }
 
-    size = 0;
-    do {
-        read_size = fread(read_buf, 1, SIZE, f);
-        size += read_size;
-    } while(read_size != 0);
-
-    fclose(f);
-
-    return size;
-}
-
-int getProcessing(char *body, char *file_path) {
-
-    FILE *f;
-    int file_size;
-
-    file_size = getFileSize(file_path);
-    if (file_size == 0) {
-        printf("getFileSize error\n");
-        return 404;
-    }
-
-    f = fopen(file_path, "r");
-    fread(body, 1, file_size, f);
-    fclose(f);
-
-    return 200;
-}
 
 //ここがコネクタになる
 void ServerSocket::httpServer(int ws)
 {
-	int status;
-	HTTPRequest req(ws);
-	char body[SIZE];
-	char target[SIZE];
-	unsigned int file_size;
-	char header_field[SIZE];
+	HTTPRequest *req = new HTTPRequest(ws);
+	/* int status; */
+	/* char body[SIZE]; */
+	/* unsigned int file_size; */
+	/* char header_field[SIZE]; */
 
-	printf("ws: %d\n", req.get_ws());
-
-	if (req.recvRequestMessage() == -1) {
+	if (req->recvRequestMessage() == -1) {
 		::shutdown(ws, SHUT_RDWR);
 		::close(ws);
 		delete_client(ws);
 		fprintf(stderr, "connection closed on descriptor %d.\n", ws);
 	}
-	req.perseRequestMessage();
 
-	strcpy(target, "./index.html");
+	//確認用
+	printf("get_request_message: %s\n\n", req->get_request_message());
 
-	if (strcmp(req.get_method(), "GET") == 0) {
-		status = getProcessing(body, target);
-	} else {
-		status = 400;
-	}
+	req->perseRequestMessage();
+	
+	//確認用
+	req->show();
+	/* メソッドがGET以外はステータスコードを404にする */
 
-	file_size = getFileSize(&target[1]);
-	file_size = strlen(body);
+	HTTPResponse *res = new HTTPResponse(req);
+
+	file_size = getFileSize(req->get_uri());
+	//file_size = strlen(body);
 	sprintf(header_field, "Content-Length: %u\r\n", file_size);
 
-	printf("%s\n", response_message);
 	response_size = createResponseMessage(status, header_field, body, file_size);
-	printf("%s\n", response_message);
 	sendResponseMessage(ws);
 
 	//printf("%s", buf);
@@ -294,74 +253,12 @@ int ServerSocket::AcceptLoopSelect()
 		for (i = 0; i < clients_no; i++) {
 			if (FD_ISSET(clients[i], &readfds)) {
 				httpServer(clients[i]);
-				break;
+				//break; これなくても動きそう
 			}
 		}
 	}
-
 	return (0);
 }
-
-/* ServerSocket::ServerSocket(int domain, int type, int protocol) */
-/* 	: address("127.0.0.1"), port("4242") */
-/* { */
-/* 	int soval = 1; */
-/* 	memset(&sa, 0, sizeof(sa)); */
-/* 	sock = socket(domain, type, protocol); */
-/* 	if (sock < 0) { */
-/* 		perror("socket"); */
-/* 		exit(EXIT_FAILURE); */
-/* 	} */
-
-/* 	//アドレス再利用の設定 */
-/* 	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &soval, sizeof(soval)) == -1) { */
-/* 		perror("setsockopt"); */
-/* 		exit(EXIT_FAILURE); */
-/* 	} */
-/* } */
-
-/* int ServerSocket::bind(std::string ip, std::string port) */
-/* { */
-/* 	(void)ip; */
-/* 	memset(&sa, 0, sizeof(sa)); */
-/* 	sa.sin_len = sizeof(sa); */
-/* 	sa.sin_family = AF_INET; */
-/* 	sa.sin_port = htons(stoi(port)); */
-/* 	sa.sin_addr.s_addr = htonl(INADDR_ANY); */
-
-/* 	int status = ::bind(sock, (struct sockaddr *)&sa, sizeof(sa)); */
-/* 	if (status == -1) { */
-/* 		perror("bind"); */
-/* 		exit(EXIT_FAILURE); */
-/* 	} */
-/* 	return status; */
-/* } */
-
-/* int ServerSocket::listen(int max_queue) */
-/* { */
-/* 	int status = ::listen(sock, max_queue); */
-/* 	if (status < 0) { */
-/* 		perror("listen"); */
-/* 		exit(EXIT_FAILURE); */
-/* 	} */
-/* 	return status; */
-/* } */
-
-//int ServerSocket::connect(std::string ip, std::string port){}
-
-/* int ServerSocket::accept() */
-/* { */
-/* 	struct sockaddr_in ca; */
-/* 	socklen_t ca_len; */
-/* 	int ws; */
-
-/* 	ca_len = sizeof(ca); */
-/* 	ws = ::accept(sock, (struct sockaddr *)&ca, &ca_len); */
-/* 	if (ws == -1) { */
-/* 		perror("accept"); */
-/* 	} */
-/* 	return ws; */
-/* } */
 
 int ServerSocket::shutdown()
 {
