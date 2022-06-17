@@ -30,14 +30,32 @@ class Server {
   int run();
 
   int get_fd_();
+  int get_status_();
+  char *get_header_field_();
+  int get_file_size_();
+  char * get_body_();
 
   void set_method_(char *method);
   void set_target_(char *target);
+  void set_status_(int status);
+  void set_response_message_(char *message);
+	
+  int sendResponseMessage();
 
  private:
   int fd_;
   char *method_;
   char *target_;
+  int status_;
+
+  char body_[SIZE];
+  char header_field_[SIZE];
+  unsigned int file_size_;
+  int response_size_;
+
+  //とりあえずポインタにしているが微妙な気がする
+  char *response_message_;
+
 };
 
 #endif
