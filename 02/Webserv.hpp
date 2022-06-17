@@ -18,10 +18,10 @@
 #include <errno.h>
 #include <map>
 
-#include "Request.hpp"
-#include "Server.hpp"
-
+class Server;
 // [socketの状態を監視してacceptできたものをHTTPRequestに送る]
+
+#define MAX_CLIENTS 20
 
 class Webserv
 {
@@ -31,9 +31,16 @@ class Webserv
         Webserv(Webserv const &other);
         Webserv &operator=(Webserv const &other);
 
+		void run();
+
     private:
-		std::map<int, Server> _servers;
-		
+		Server *server_;
+		std::map<int, Server *> sockets_;
+		int sock_; //readyできているsock -> 最終的にはここをvectorで持つ?
+		fd_set fd_set_;
+		unsigned int fd_size_;
+		int max_fd_;
+
 };
 
 #endif

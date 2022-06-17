@@ -1,50 +1,45 @@
 #ifndef WEBSERV_HPP
-# define WEBSERV_HPP
+#define WEBSERV_HPP
 
-#include <iostream>
-#include <cstdlib>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <sys/ioctl.h>
-#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
-#include <arpa/inet.h>
-#include <vector>
+#include <netinet/in.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <sys/un.h>
-#include <errno.h>
-#include <map>
+#include <unistd.h>
 
-class Server;
-// [socketの状態を監視してacceptできたものをHTTPRequestに送る]
+#include <cstdlib>
+#include <iostream>
+#include <vector>
+
+#include "Server.hpp"
 
 #define MAX_CLIENTS 20
 
-class Webserv
-{
-    public:
-        Webserv(std::string port);
-        virtual ~Webserv();
-        Webserv(Webserv const &other);
-        Webserv &operator=(Webserv const &other);
+// socketやacceptを行い、Serverにつなげる
+class Webserv {
+ public:
+  Webserv(std::string port);
+  virtual ~Webserv();
+  Webserv(Webserv const &other);
+  Webserv &operator=(Webserv const &other);
 
-		void run();
+  void loop();
+  int shutdown();
+  void close();
 
-    private:
-		Server *_server;
-		std::map<int, Server *> _sockets;
-		int _sock; //readyできているsock -> 最終的にはここをvectorで持つ?
-		fd_set _fd_set;
-		unsigned int _fd_size;
-		int _max_fd;
-
-		std::string address;
-		std::string port;
-		int clients[MAX_CLIENTS];
-		int clients_no;
+ private:
+  int sock_;
+  std::string address_;
+  std::string port_;
+  int clients_[MAX_CLIENTS];
+  int clients_no_;
 };
 
 #endif
