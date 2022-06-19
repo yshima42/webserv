@@ -100,6 +100,7 @@ void Webserv::loop() {
         ::close(acc);
         fprintf(stderr, "Refused a new connection.\n");  //後ほど変更
       } else {
+		  printf("clients = acc\n");
         clients_[clients_no_] = acc;
         clients_no_++;
         fprintf(stderr, "accepted a connection on descriptor %d.\n", acc);
@@ -107,6 +108,7 @@ void Webserv::loop() {
       for (i = 0; i < clients_no_; i++) {
         if (FD_ISSET(clients_[i], &readfds)) {
           //ここからServerにつなげる
+		  printf("server: %d\n", clients_[i]);
           Server server(clients_[i]);
           int ret = server.run();
           if (ret <= 0) {

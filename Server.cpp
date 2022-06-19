@@ -53,6 +53,9 @@ int Server::sendResponseMessage() {
 	return send_size;
 }
 
+// めちゃめちゃでかいリクエストが来た時 中途半端にメッセージ作って送っちゃう
+// ものすごいでかいボディができた時
+// => recvとsendの処理をわける
 int Server::run() {
   int request_size;
 
