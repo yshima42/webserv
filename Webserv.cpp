@@ -121,6 +121,7 @@ void Webserv::loop() {
 
 int Webserv::shutdown() {
   int status = ::shutdown(sock_, SHUT_RDWR);
+  std::cout << "shuddown" << std::endl;
   if (status == -1) {
     perror("shutdown");
     exit(EXIT_FAILURE);
@@ -128,7 +129,10 @@ int Webserv::shutdown() {
   return status;
 }
 
-void Webserv::close() { ::close(sock_); }
+void Webserv::close() { 
+	::close(sock_);
+	std::cout << "closed" << std::endl;
+}
 
 Webserv::Webserv(Webserv const &other) { *this = other; }
 
