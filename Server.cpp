@@ -47,6 +47,7 @@ int getProccessing(char *body, char *file_path) {
 int Server::sendResponseMessage() {
 	int send_size;
 
+	printf("fd: %d\n", fd_);
 	send_size = send(fd_, response_message_, response_size_, 0);
 
 	return send_size;
@@ -85,13 +86,13 @@ int Server::run() {
   //ヘッダーフィールド作成
   file_size_ = getFileSize(&target_[1]);
   sprintf(header_field_, "Content-Length: %u\r\n", file_size_);
-  printf("header_field: %s\n", header_field_);
+  //printf("header_field: %s\n", header_field_);
 
   HTTPResponse res(this);
   response_size_ = res.createResponseMessage();
 
   //確認用
-  //printf("response_message_: %s\n", response_message_);
+  printf("response_message_: %s\n", response_message_);
   
   this->sendResponseMessage();
 
