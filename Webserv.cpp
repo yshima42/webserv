@@ -58,7 +58,7 @@ Webserv::Webserv(std::string port)
 
 Webserv::~Webserv() {}
 
-//select, acceptをしてaccepted fdをServerクラスにつなぐ
+// select, acceptをしてaccepted fdをServerクラスにつなぐ
 void Webserv::loop() {
   fd_set readfds;
   int maxfd = sock_ + 1;
@@ -70,13 +70,13 @@ void Webserv::loop() {
 
     //つながってるクライアントのbufに何か入っていないか見張る
     for (i = 0; i < clients_no_; i++) {
-		if (clients_[i] != -1) {
-      		FD_SET(clients_[i], &readfds);
-      		if (clients_[i] + 1 > maxfd) {
-        	maxfd = clients_[i] + 1;
-        	count++;
-      		}
-		}
+      if (clients_[i] != -1) {
+        FD_SET(clients_[i], &readfds);
+        if (clients_[i] + 1 > maxfd) {
+          maxfd = clients_[i] + 1;
+          count++;
+        }
+      }
     }
 
     //いずれかの記述子の準備ができるまで待つ
@@ -100,21 +100,21 @@ void Webserv::loop() {
         ::close(acc);
         fprintf(stderr, "Refused a new connection.\n");  //後ほど変更
       } else {
-		  printf("clients = acc\n");
+        printf("clients = acc\n");
         clients_[clients_no_] = acc;
         clients_no_++;
         fprintf(stderr, "accepted a connection on descriptor %d.\n", acc);
       }
-      for (i = 0; i < clients_no_; i++) {
-        if (FD_ISSET(clients_[i], &readfds)) {
-          //ここからServerにつなげる
-		  printf("server: %d\n", clients_[i]);
-          Server server(clients_[i]);
-          int ret = server.run();
-          if (ret <= 0) {
-            ::close(clients_[i]);
-            clients_[i] = -1;
-          }
+    }
+
+    for (i = 0; i < clients_no_; i++) {
+      if (FD_ISSET(clients_[i], &readfds)) {
+        //ここからServerにつなげる
+        Server server(clients_[i]);
+        int ret = server.run();
+        if (ret <= 0) {
+          ::close(clients_[i]);
+          clients_[i] = -1;
         }
       }
     }
@@ -131,9 +131,9 @@ int Webserv::shutdown() {
   return status;
 }
 
-void Webserv::close() { 
-	::close(sock_);
-	std::cout << "closed" << std::endl;
+void Webserv::close() {
+  ::close(sock_);
+  std::cout << "closed" << std::endl;
 }
 
 Webserv::Webserv(Webserv const &other) { *this = other; }

@@ -16,7 +16,7 @@ class HTTPRequest {
   int parseRequestMessage();
 
  private:
-  //int fd_;
+  // int fd_;
   Server *sv_;
   char request_message_[SIZE];
   int request_size_;

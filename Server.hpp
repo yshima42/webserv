@@ -33,13 +33,13 @@ class Server {
   int get_status_();
   char *get_header_field_();
   int get_file_size_();
-  char * get_body_();
+  char *get_body_();
 
   void set_method_(char *method);
   void set_target_(char *target);
   void set_status_(int status);
   void set_response_message_(char *message);
-	
+
   int sendResponseMessage();
 
  private:
@@ -55,7 +55,6 @@ class Server {
 
   //とりあえずポインタにしているが微妙な気がする
   char *response_message_;
-
 };
 
 #endif
