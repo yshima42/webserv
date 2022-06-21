@@ -2,11 +2,11 @@
 #define HTTPRESPONSE_HPP
 
 #include "HTTPRequest.hpp"
-#include "Server.hpp"
+#include "HTTPServer.hpp"
 
 class HTTPResponse {
  public:
-  HTTPResponse(Server *sv);
+  HTTPResponse(HTTPServer *sv);
   virtual ~HTTPResponse();
   HTTPResponse(HTTPResponse const &other);
   HTTPResponse &operator=(HTTPResponse const &other);
@@ -14,7 +14,7 @@ class HTTPResponse {
   int createResponseMessage();
 
  private:
-  Server *sv_;
+  HTTPServer *sv_;
   char response_message_[SIZE];
 };
 

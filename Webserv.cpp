@@ -58,7 +58,7 @@ Webserv::Webserv(std::string port)
 
 Webserv::~Webserv() {}
 
-// select, acceptをしてaccepted fdをServerクラスにつなぐ
+// select, acceptをしてaccepted fdをHTTPServerクラスにつなぐ
 void Webserv::loop() {
   fd_set readfds;
   int maxfd = sock_ + 1;
@@ -109,8 +109,8 @@ void Webserv::loop() {
 
     for (i = 0; i < clients_no_; i++) {
       if (FD_ISSET(clients_[i], &readfds)) {
-        //ここからServerにつなげる
-        Server server(clients_[i]);
+        //ここからHTTPServerにつなげる
+        HTTPServer server(clients_[i]);
         int ret = server.run();
         if (ret <= 0) {
           ::close(clients_[i]);

@@ -1,14 +1,13 @@
 #include "HTTPRequest.hpp"
 
-HTTPRequest::HTTPRequest(Server *sv) { sv_ = sv; }
+HTTPRequest::HTTPRequest(int fd) : fd_(fd) { }
 
 HTTPRequest::~HTTPRequest() {}
 
 int HTTPRequest::recvRequestMessage() {
-  int fd = sv_->get_fd_();
 
   if ((request_size_ =
-           recv(fd, &request_message_, sizeof(request_message_), 0)) == -1) {
+           recv(fd_, &request_message_, sizeof(request_message_), 0)) == -1) {
     perror("recv");
     exit(1);
   } else if (request_size_ == 0) {
@@ -32,16 +31,31 @@ int HTTPRequest::parseRequestMessage() {
     printf("get method error\n");
     return -1;
   }
-  sv_->set_method_(tmp_method);
+  method_ = tmp_method;
 
   tmp_target = strtok(NULL, " ");
   if (tmp_target == NULL) {
     printf("get target error\n");
     return -1;
   }
-  sv_->set_target_(tmp_target);
+  target_ = tmp_target;
 
   return 0;
+}
+
+char * HTTPRequest::get_method_()
+{
+	return method_;
+}
+
+char * HTTPRequest::get_target_()
+{
+	return target_;
+}
+
+void HTTPRequest::set_target_(char *target)
+{
+	strcpy(target_, target);
 }
 
 HTTPRequest::HTTPRequest(HTTPRequest const &other) { *this = other; }

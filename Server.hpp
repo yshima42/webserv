@@ -1,60 +1,44 @@
-#ifndef SERVERSOCKET_HPP
-#define SERVERSOCKET_HPP
-
-#include <arpa/inet.h>
-#include <errno.h>
-#include <fcntl.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/un.h>
-#include <unistd.h>
-
-#include <cstdlib>
-#include <iostream>
+#include <string>
 #include <vector>
 
-#define SIZE 1024 * 5
+struct Location
+{
+	std::string name; //uri
 
-class Server {
- public:
-  Server(int accepted_fd);
-  virtual ~Server();
-  Server(Server const &other);
-  Server &operator=(Server const &other);
+	// Define a HTTP redirection.
+	std::string root;
 
-  int run();
+	// Define a list of accepted HTTP methods for the route
+	std::vector< std::string > allowed_methods;
 
-  int get_fd_();
-  int get_status_();
-  char *get_header_field_();
-  int get_file_size_();
-  char *get_body_();
+	// Set a default file to answer if the request is a directory.
+	std::vector< std::string > index;
 
-  void set_method_(char *method);
-  void set_target_(char *target);
-  void set_status_(int status);
-  void set_response_message_(char *message);
+	// Execute CGI based on certain file extension (for example .php).
+	std::string cgi_path;
 
-  int sendResponseMessage();
-
- private:
-  int fd_;
-  char *method_;
-  char *target_;
-  int status_;
-
-  char body_[SIZE];
-  char header_field_[SIZE];
-  unsigned int file_size_;
-  int response_size_;
-
-  //とりあえずポインタにしているが微妙な気がする
-  char *response_message_;
+	// Limit client body size.
+	size_t client_body_size_limit;
 };
 
-#endif
+struct Server
+{
+	// Choose the port and host of each ’server’.
+	size_t port;
+	std::string host;
+
+	// Setup the server_names or not.
+	std::string name; // 複数必要？ server_namesと書いてある
+
+	// Setup default error pages.
+	std::string error_page; // これも複数必要？ error pagesと書いてある
+
+	// Setup routes with one or multiple of the following rules/configuration (routes wont be using regexp)
+	std::string root;
+
+	std::vector< Location > locations;
+
+	// Turn on or off directory listing.
+	bool directory_listing;
+};
+

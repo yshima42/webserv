@@ -1,6 +1,6 @@
 #include "HTTPResponse.hpp"
 
-HTTPResponse::HTTPResponse(Server *sv) { sv_ = sv; }
+HTTPResponse::HTTPResponse(HTTPServer *sv) { sv_ = sv; }
 
 HTTPResponse::~HTTPResponse() {}
 

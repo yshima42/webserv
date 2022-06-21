@@ -18,11 +18,11 @@
 #include <iostream>
 #include <vector>
 
-#include "Server.hpp"
+#include "HTTPServer.hpp"
 
 #define MAX_CLIENTS 20
 
-// socketやacceptを行い、Serverにつなげる
+// socketやacceptを行い、HTTPServerにつなげる
 class Webserv {
  public:
   Webserv(std::string port);

@@ -1,11 +1,21 @@
 #include "HTTPRequest.hpp"
-#include "Server.hpp"
+#include "HTTPServer.hpp"
 #include "Webserv.hpp"
+#include "Config.hpp"
 
-int main() {
-  Webserv s("4242");
+int main(int ac, char *av[]) {
+	Config config;
 
-  s.loop();
-  s.shutdown();
-  s.close();
+	if (ac != 2) {
+		std::cerr << "Usage: ./webserv <config file>" << std::endl;
+		return 0;
+	}
+	//try chatchやる
+	config = Config(av[1]);
+
+  /* Webserv s("4242"); */
+
+  /* s.loop(); */
+  /* s.shutdown(); */
+  /* s.close(); */
 }

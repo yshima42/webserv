@@ -1,11 +1,11 @@
-#include "Server.hpp"
+#include "HTTPServer.hpp"
 
 #include "HTTPRequest.hpp"
 #include "HTTPResponse.hpp"
 
-Server::Server(int accepted_fd) : fd_(accepted_fd) {}
+HTTPServer::HTTPServer(int accepted_fd) : fd_(accepted_fd) {}
 
-Server::~Server() {}
+HTTPServer::~HTTPServer() {}
 
 unsigned int getFileSize(const char *path) {
   int size, read_size;
@@ -44,7 +44,7 @@ int getProccessing(char *body, char *file_path) {
   return 200;
 }
 
-int Server::sendResponseMessage() {
+int HTTPServer::sendResponseMessage() {
   int send_size;
 
   printf("fd: %d\n", fd_);
@@ -56,10 +56,10 @@ int Server::sendResponseMessage() {
 // めちゃめちゃでかいリクエストが来た時 中途半端にメッセージ作って送っちゃう
 // ものすごいでかいボディができた時
 // => recvとsendの処理をわける
-int Server::run() {
+int HTTPServer::run() {
   int request_size;
 
-  HTTPRequest req(this);
+  HTTPRequest req(fd_);
   if ((request_size = req.recvRequestMessage()) <= 0) {
     return -1;
   }
@@ -68,16 +68,17 @@ int Server::run() {
   if (req.parseRequestMessage() < 0) {
     return -1;
   }
+
   // parseで入っているか確認
-  /* printf("method: %s\n", method_); */
-  /* printf("target: %s\n", target_); */
+  printf("method: %s\n", req.get_method_());
+  printf("target: %s\n", req.get_target_());
 
   //この部分をどこでやるか要検討
-  if (strcmp(method_, "GET") == 0) {
-    if (strcmp(target_, "/") == 0) {
-      strcpy(target_, "/index.html");
+  if (strcmp(req.get_method_(), "GET") == 0) {
+    if (strcmp(req.get_target_(), "/") == 0) {
+		req.set_target_(strdup("/index.html"));
     }
-    status_ = getProccessing(body_, &target_[1]);
+    status_ = getProccessing(body_, &req.get_target_()[1]);
   } else {
     status_ = 404;
   }
@@ -87,7 +88,7 @@ int Server::run() {
   /* printf("body: %s\n", body); */
 
   //ヘッダーフィールド作成
-  file_size_ = getFileSize(&target_[1]);
+  file_size_ = getFileSize(&req.get_target_()[1]);
   sprintf(header_field_, "Content-Length: %u\r\n", file_size_);
   // printf("header_field: %s\n", header_field_);
 
@@ -102,29 +103,25 @@ int Server::run() {
   return request_size;
 }
 
-int Server::get_fd_() { return fd_; }
+int HTTPServer::get_fd_() { return fd_; }
 
-int Server::get_status_() { return status_; }
+int HTTPServer::get_status_() { return status_; }
 
-char *Server::get_header_field_() { return header_field_; }
+char *HTTPServer::get_header_field_() { return header_field_; }
 
-int Server::get_file_size_() { return file_size_; }
+int HTTPServer::get_file_size_() { return file_size_; }
 
-char *Server::get_body_() { return body_; }
+char *HTTPServer::get_body_() { return body_; }
 
-void Server::set_method_(char *method) { this->method_ = method; }
+void HTTPServer::set_status_(int status) { this->status_ = status; }
 
-void Server::set_target_(char *target) { this->target_ = target; }
-
-void Server::set_status_(int status) { this->status_ = status; }
-
-void Server::set_response_message_(char *message) {
+void HTTPServer::set_response_message_(char *message) {
   this->response_message_ = message;
 }
 
-Server::Server(Server const &other) { *this = other; }
+HTTPServer::HTTPServer(HTTPServer const &other) { *this = other; }
 
-Server &Server::operator=(Server const &other) {
+HTTPServer &HTTPServer::operator=(HTTPServer const &other) {
   if (this != &other) {
   }
   return *this;
