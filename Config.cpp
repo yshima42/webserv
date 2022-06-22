@@ -34,13 +34,38 @@ std::string read_file(std::string file) {
 	return file_content;
 }
 
+size_t count_lines(std::string str)
+{
+	size_t line_num = 0;
+
+	for (size_t i = 0; str[i]; i++) {
+		if (str[i] == '\n')
+			line_num++;
+	}
+	return line_num;
+}
+
+template<T>
+void print_vector(std::vector<T> )
+
+std::vector<std::string> split(const std::string &s, char delim) {
+	std::vector<std::string> elems;
+	std::stringstream ss(s);
+	std::string item;
+	while (getline(ss, item, delim)) {
+		if (!item.empty()) {
+			elems.push_back(item);
+		}
+	}
+	return elems;
+}
+
 void Config::parse_config(std::string file)
 {
-	std::string file_content;
+	std::string file_content = read_file(file);
+	size_t line_num = count_lines(file_content);
+	std::vector<std::string> line = split(file_content, '\n');
 
-	file_content = read_file(file);
-
-	//file_content = ;
 
 }
 
