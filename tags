@@ -1,0 +1,74 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BLUE	src/color.hpp	/^#define BLUE /;"	d
+CLIENT_NAME	Makefile	/^CLIENT_NAME = client$/;"	m
+CLIENT_OBJS	Makefile	/^CLIENT_OBJS = $(addprefix $(OBJS_DIR)\/, $(notdir $(CLIENT_SRCS:.cpp=.o)))$/;"	m
+CLIENT_SRCS	Makefile	/^CLIENT_SRCS = TCPEchoClient.cpp \\$/;"	m
+COLOR_HPP	src/color.hpp	/^#define COLOR_HPP$/;"	d
+CYAN	src/color.hpp	/^#define CYAN /;"	d
+DieWithError	src/DieWithError.cpp	/^void DieWithError(const char *errorMessage) {$/;"	f
+GREEN	src/color.hpp	/^#define GREEN /;"	d
+IWATCHER_HPP	src/IWatcher.hpp	/^#define IWATCHER_HPP$/;"	d
+IWatcher	src/IWatcher.hpp	/^class IWatcher {$/;"	c
+MAGENTA	src/color.hpp	/^#define MAGENTA /;"	d
+OBJS_DIR	Makefile	/^OBJS_DIR = .\/obj$/;"	m
+RCVBUFSIZE	src/TCPEchoClient.cpp	/^#define RCVBUFSIZE /;"	d	file:
+RED	src/color.hpp	/^#define RED /;"	d
+RESET	src/color.hpp	/^#define RESET /;"	d
+SELECTOR_HPP	src/Selector.hpp	/^#define SELECTOR_HPP$/;"	d
+SERVER_HPP	src/Server.hpp	/^#define SERVER_HPP$/;"	d
+SERVER_NAME	Makefile	/^SERVER_NAME = server$/;"	m
+SERVER_OBJS	Makefile	/^SERVER_OBJS = $(addprefix $(OBJS_DIR)\/, $(notdir $(SERVER_SRCS:.cpp=.o)))$/;"	m
+SERVER_SRCS	Makefile	/^SERVER_SRCS = Server.cpp \\$/;"	m
+SRCS_DIR	Makefile	/^SRCS_DIR = .\/src$/;"	m
+Selector	src/Selector.cpp	/^Selector::Selector(std::set<int> readfds) {$/;"	f	class:Selector
+Selector	src/Selector.hpp	/^class Selector {$/;"	c
+Server	src/Server.cpp	/^Server::Server() {$/;"	f	class:Server
+Server	src/Server.hpp	/^class Server {$/;"	c
+YELLOW	src/color.hpp	/^#define YELLOW /;"	d
+accept	src/Server.cpp	/^int Server::accept() {$/;"	f	class:Server
+addReadFd	src/Selector.cpp	/^void Selector::addReadFd(int fd) {$/;"	f	class:Selector
+addWriteFd	src/Selector.cpp	/^void Selector::addWriteFd(int fd) {$/;"	f	class:Selector
+buffer_	src/Server.hpp	/^  char buffer_[kMaxConnection][kRecvBufferSize + 1];$/;"	m	class:Server
+close	src/Server.cpp	/^int Server::close(int fd) {$/;"	f	class:Server
+connected_fd_	src/Server.hpp	/^  std::set<int> connected_fd_;$/;"	m	class:Server
+eventLoop	src/main.cpp	/^void eventLoop() {$/;"	f
+evnet_cnt_	src/Selector.hpp	/^  int evnet_cnt_;$/;"	m	class:Selector
+getAllSocketFd	src/Server.cpp	/^std::set<int> Server::getAllSocketFd() const {$/;"	f	class:Server
+getConnectedFd	src/Server.cpp	/^std::set<int> Server::getConnectedFd() const { return connected_fd_; }$/;"	f	class:Server
+getEventCount	src/Selector.cpp	/^int Selector::getEventCount() const { return evnet_cnt_; }$/;"	f	class:Selector
+getListenFd	src/Server.cpp	/^int Server::getListenFd() const { return listen_fd_; }$/;"	f	class:Server
+getReadyReadFds	src/Selector.cpp	/^std::set<int> Selector::getReadyReadFds() const { return ready_readfds_; }$/;"	f	class:Selector
+getReadyWriteFds	src/Selector.cpp	/^std::set<int> Selector::getReadyWriteFds() const { return ready_writefds_; }$/;"	f	class:Selector
+init	src/Selector.cpp	/^void Selector::init(std::set<int> readfds) {$/;"	f	class:Selector
+kMaxConnection	src/Server.hpp	/^  static const int kMaxConnection = 32;$/;"	m	class:Server
+kMaxPendig	src/Server.hpp	/^  static const int kMaxPendig = 5;$/;"	m	class:Server
+kRecvBufferSize	src/Server.hpp	/^  static const int kRecvBufferSize = 32;$/;"	m	class:Server
+kServerPortBase	src/Server.hpp	/^  static const int kServerPortBase = 5000;$/;"	m	class:Server
+kTimeoutSec	src/Selector.hpp	/^  static const int kTimeoutSec = 5;$/;"	m	class:Selector
+listen_fd_	src/Server.hpp	/^  int listen_fd_;$/;"	m	class:Server
+main	src/TCPEchoClient.cpp	/^int main(int argc, char *argv[]) {$/;"	f
+main	src/main.cpp	/^int main() {$/;"	f
+max_fd_	src/Selector.hpp	/^  int max_fd_;$/;"	m	class:Selector
+max_readfd_	src/Selector.hpp	/^  int max_readfd_;$/;"	m	class:Selector
+max_writefd_	src/Selector.hpp	/^  int max_writefd_;$/;"	m	class:Selector
+monitor	src/Selector.cpp	/^int Selector::monitor() {$/;"	f	class:Selector
+printSetInfo	src/Selector.cpp	/^void printSetInfo(std::set<int> fds) {$/;"	f
+ready_readfds_	src/Selector.hpp	/^  std::set<int> ready_readfds_;$/;"	m	class:Selector
+ready_writefds_	src/Selector.hpp	/^  std::set<int> ready_writefds_;$/;"	m	class:Selector
+recvClientMessage	src/Server.cpp	/^int Server::recvClientMessage(int readable_fd) {$/;"	f	class:Server
+removeReadFd	src/Selector.cpp	/^void Selector::removeReadFd(int fd) {$/;"	f	class:Selector
+removeWriteFd	src/Selector.cpp	/^void Selector::removeWriteFd(int fd) {$/;"	f	class:Selector
+sendMessage	src/Server.cpp	/^int Server::sendMessage(int writable_fd) {$/;"	f	class:Server
+showDebugInfo	src/Selector.cpp	/^void Selector::showDebugInfo() const {$/;"	f	class:Selector
+target_readfds_	src/Selector.hpp	/^  std::set<int> target_readfds_;$/;"	m	class:Selector
+target_writefds_	src/Selector.hpp	/^  std::set<int> target_writefds_;$/;"	m	class:Selector
+timeout_	src/Selector.hpp	/^  struct timeval timeout_;$/;"	m	class:Selector	typeref:struct:Selector::timeval
+toFdset	src/Selector.cpp	/^fd_set Selector::toFdset(std::set<int> cont_fds) {$/;"	f	class:Selector
+toSet	src/Selector.cpp	/^std::set<int> Selector::toSet(fd_set fds, std::set<int> cont_fds) {$/;"	f	class:Selector
+~Selector	src/Selector.cpp	/^Selector::~Selector() {}$/;"	f	class:Selector
+~Server	src/Server.cpp	/^Server::~Server() {$/;"	f	class:Server
