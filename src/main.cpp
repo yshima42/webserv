@@ -27,6 +27,8 @@ void eventLoop() {
     for (; it != ite; it++) {
       int recvMsgSize = serv.recvClientMessage(*it);
       if (recvMsgSize > 0) {
+	  	serv.parseRequestMessage(*it);
+		serv.createResponseMe
         selector.addTargetWriteFd(*it);
       } else {
         selector.removeTargetWriteFd(*it);

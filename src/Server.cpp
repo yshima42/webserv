@@ -87,6 +87,11 @@ int Server::recvClientMessage(int readable_fd) {
   return recvMsgSize;
 }
 
+void Server::parseRequestMessage(int readable_fd) {
+	req_ = new Request(response_message_[readable_fd]);
+	
+}
+
 int Server::sendMessage(int writable_fd) {
   const char *response = response_message_[writable_fd].c_str();
   size_t response_len = response_message_[writable_fd].size();

@@ -10,6 +10,7 @@ OBJS_DIR = ./obj
 SERVER_SRCS = Server.cpp \
 			  Selector.cpp \
 			  main.cpp \
+			  Request.cpp \
 			  $(NULL)
 
 
