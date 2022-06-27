@@ -45,8 +45,6 @@ size_t count_lines(std::string str)
 	return line_num;
 }
 
-template<T>
-void print_vector(std::vector<T> )
 
 std::vector<std::string> split(const std::string &s, char delim) {
 	std::vector<std::string> elems;
@@ -60,11 +58,22 @@ std::vector<std::string> split(const std::string &s, char delim) {
 	return elems;
 }
 
+template <typename T>
+void print_vector(std::vector< T > vec) {
+	typename std::vector< T >::iterator it = vec.begin();
+	int i = 0;
+	for(;it < vec.end(); it++) {
+		i++;
+		std::cout << i << "] " << *it << std::endl;
+	}
+}
+
 void Config::parse_config(std::string file)
 {
 	std::string file_content = read_file(file);
-	size_t line_num = count_lines(file_content);
-	std::vector<std::string> line = split(file_content, '\n');
+	//size_t line_num = count_lines(file_content);
+	std::vector<std::string> lines = split(file_content, '\n');
+	print_vector(lines);
 
 
 }
