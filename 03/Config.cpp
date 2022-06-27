@@ -1,4 +1,5 @@
 #include "Config.hpp"
+#include <cctype>
 
 Config::Config()
 {
@@ -68,12 +69,39 @@ void print_vector(std::vector< T > vec) {
 	}
 }
 
+char char_after_spaces(std::string str) {
+	for (int i = 0; str.at(i); i++) {
+		if (!(std::isspace(str.at(i)) && str.at(i) != '\n'))
+			return str.at(i);
+	}
+	return '\0';
+}
+
+// スペースと改行だけの行、コメント行をvectorからdelete
+// スペースと改行だけの時にエラー isspaceの部分見直し
+void del_skip_lines(std::vector<std::string> &vec) {
+	std::vector<std::string>::iterator it = vec.begin();
+	for(; it < vec.end(); it++) {
+		if (char_after_spaces(*it) == '\n' || char_after_spaces(*it) == '#')
+			vec.erase(it);
+	}
+}
+
 void Config::parse_config(std::string file)
 {
+	//size_t i = 0;
 	std::string file_content = read_file(file);
 	//size_t line_num = count_lines(file_content);
 	std::vector<std::string> lines = split(file_content, '\n');
+	//std::string a = "     \n";
+	//std::cout << char_after_spaces(a) << std::endl;
+	del_skip_lines(lines);
 	print_vector(lines);
+	/* while (i < line_num) */
+	/* { */
+	/* 		std::cout << lines[i] << std::endl; */
+	/* 	i++; */
+	/* } */
 
 
 }
