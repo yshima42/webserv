@@ -40,41 +40,62 @@ void ConfigParser::parseTokens(std::vector<std::string> tokens)
 	for (; it < tokens.end(); it++) {
 		if (*it == "server" && *(++it) == "{") {
 			ServerConfig  server;
-			it++;
-			parseServer(server, it);
+			parseServer(server, ++it);
 			std::cout << "OK" << std::endl;
 			serverconfigs_.push_back(server);
 		} else {
 			throw -1;
 		}
 	}
-	std::cout << serverconfigs_[0].port << std::endl;
+	std::cout << serverconfigs_[0].names_[2] << std::endl;
 }
 
-bool isEndSentense(std::string str)
+int posSemicolon(std::string str)
 {
-	size_t i = 0;
-	while (str[i]) {
-		if (str[i] == ';')
-			return true;
-		i++;
+	int pos = 0;
+	while (str[pos]) {
+		if (str[pos] == ';')
+			return pos;
+		pos++;
 	}
-	return false;
+	return -1;
+}
+
+int countContents(std::vector<std::string>::iterator it) {
+	int num = 1;
+	for (; posSemicolon(*it) == -1; ++it) {
+		num++;
+	}
+	return num;
 }
 
 void ConfigParser::parseListen(ServerConfig &server, std::vector<std::string>::iterator &it)
 {
-	if (isEndSentense(*it))
-		server.port = stoi(it->substr(0, 3));
+	server.port_ = stoi(it->substr(0, posSemicolon(*it)));
+}
+
+void ConfigParser::parseServerName(ServerConfig &server, std::vector<std::string>::iterator &it)
+{
+	int num = countContents(it);
+	for (int i = 0; i < num; ++i, ++it) {
+		//std::cout << *it << std::endl;
+		if (posSemicolon(*it) != -1) {
+			server.names_.push_back(it->substr(0, posSemicolon(*it)));
+		} else {
+			server.names_.push_back(*it);
+		}
+	}
+	it--;
 }
 
 void ConfigParser::parseServer(ServerConfig &server, std::vector<std::string>::iterator &it)
 {
-	for (; *it != "}"; it++) {
+	for (; *it != "}"; ++it) {
 		if (*it == "listen") {
-			parseListen(server, ++it); }
-		/* } else if (*it == "server_name") { */
-		/* 	parseServerName(); */
+			parseListen(server, ++it); 
+		} else if (*it == "server_name") {
+			parseServerName(server, ++it); 
+		}
 		/* } else if (*it == "root") { */
 		/* 	parseRoot(); */
 		/* } else if (*it == "location") { */
@@ -161,20 +182,20 @@ std::vector<std::string> ConfigParser::isspaceSplit(std::string str)
 	return tokens;
 }
 
-void ConfigParser::parse_servers(std::vector<std::string> tokens)
-{
-	std::vector<std::string>::iterator it = tokens.begin();
-	std::vector<std::string>::iterator ite = tokens.end();
-	for (; it < ite; it++) {
-			if (tokens.size() > 0 && *it == "server" && *(it + 1) == "{") {
-				std::cout << "OK" << std::endl;
+/* void ConfigParser::parse_servers(std::vector<std::string> tokens) */
+/* { */
+/* 	std::vector<std::string>::iterator it = tokens.begin(); */
+/* 	std::vector<std::string>::iterator ite = tokens.end(); */
+/* 	for (; it < ite; it++) { */
+/* 			if (tokens.size() > 0 && *it == "server" && *(it + 1) == "{") { */
+/* 				std::cout << "OK" << std::endl; */
 
-		} else {
-			std::cout << "something is wrong in config file" << std::endl;
-			exit(1);
-		}
-	}
-}
+/* 		} else { */
+/* 			std::cout << "something is wrong in config file" << std::endl; */
+/* 			exit(1); */
+/* 		} */
+/* 	} */
+/* } */
 		
 ConfigParser::ConfigParser(ConfigParser const &other)
 {
