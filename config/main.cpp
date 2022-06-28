@@ -13,7 +13,6 @@ int main(int ac, char *av[]) {
 		std::cout << "something is wrong" << std::endl;
 
 	}
-	//try chatchやる
 
   /* Webserv s("4242"); */
 

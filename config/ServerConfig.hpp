@@ -28,10 +28,10 @@ struct ServerConfig
 	std::string host;
 
 	// Setup the server_names or not.
-	std::string name; // 複数必要？ server_namesと書いてある
+	std::string name; 
 
 	// Setup default error pages.
-	std::string error_page; // これも複数必要？ error pagesと書いてある
+	std::string error_page;
 
 	// Setup routes with one or multiple of the following rules/configuration (routes wont be using regexp)
 	std::string root;

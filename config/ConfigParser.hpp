@@ -30,16 +30,16 @@ class ConfigParser
     private:
 		std::vector< ServerConfig > serverconfigs_;
 		
-
 		//std::vector<std::string> tokenize(std::vector<std::string> file_content);
-		void parse_file(std::string file);
-		std::vector<std::string> read_file(std::string file);
-		std::string read_file_(std::string file);
+		void parseListen(ServerConfig &server, std::vector<std::string>::iterator &it);
+		void parseServer(ServerConfig &server, std::vector<std::string>::iterator &it);
+		void parseTokens(std::vector<std::string> tokens);
+		std::string readFile(std::string file);
 		size_t count_lines(std::string str);
 		std::vector<std::string> split(const std::string &s, char delim);
 		char char_after_spaces(std::string str);
 		void parse_servers(std::vector<std::string> tokens);
-		std::vector<std::string> isspace_split(std::string str);
+		std::vector<std::string> isspaceSplit(std::string str);
 
 };
 

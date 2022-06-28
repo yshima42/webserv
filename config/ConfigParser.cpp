@@ -17,10 +17,12 @@ ConfigParser::ConfigParser()
 ConfigParser::ConfigParser(std::string file)
 {
 	//std::vector<std::string> file_content = read_file(file);
-	std::string file_content = read_file_(file);
-	
-	std::vector<std::string> tokens = isspace_split(file_content);
+	std::string file_content = readFile(file);
+	std::vector<std::string> tokens = isspaceSplit(file_content);
 	print_vector(tokens);
+
+	parseTokens(tokens);
+
 }
 
 std::vector<ServerConfig> ConfigParser::getServerConfigs() const
@@ -32,7 +34,56 @@ ConfigParser::~ConfigParser()
 {
 }
 
-std::string ConfigParser::read_file_(std::string file) {
+void ConfigParser::parseTokens(std::vector<std::string> tokens)
+{
+	std::vector<std::string>::iterator it = tokens.begin();
+	for (; it < tokens.end(); it++) {
+		if (*it == "server" && *(++it) == "{") {
+			ServerConfig  server;
+			it++;
+			parseServer(server, it);
+			std::cout << "OK" << std::endl;
+			serverconfigs_.push_back(server);
+		} else {
+			throw -1;
+		}
+	}
+	std::cout << serverconfigs_[0].port << std::endl;
+}
+
+bool isEndSentense(std::string str)
+{
+	size_t i = 0;
+	while (str[i]) {
+		if (str[i] == ';')
+			return true;
+		i++;
+	}
+	return false;
+}
+
+void ConfigParser::parseListen(ServerConfig &server, std::vector<std::string>::iterator &it)
+{
+	if (isEndSentense(*it))
+		server.port = stoi(it->substr(0, 3));
+}
+
+void ConfigParser::parseServer(ServerConfig &server, std::vector<std::string>::iterator &it)
+{
+	for (; *it != "}"; it++) {
+		if (*it == "listen") {
+			parseListen(server, ++it); }
+		/* } else if (*it == "server_name") { */
+		/* 	parseServerName(); */
+		/* } else if (*it == "root") { */
+		/* 	parseRoot(); */
+		/* } else if (*it == "location") { */
+		/* 	parseLocation(); */
+		/* } */
+	}
+}
+
+std::string ConfigParser::readFile(std::string file) {
 	std::stringstream ss;
 	std::string buf;
 	std::ifstream ifs(file);
@@ -57,25 +108,25 @@ size_t ConfigParser::count_lines(std::string str)
 }
 
 
-std::vector<std::string> ConfigParser::split(const std::string &s, char delim) {
-	std::vector<std::string> elems;
-	std::stringstream ss(s);
-	std::string item;
-	while (getline(ss, item, delim)) {
-		if (!item.empty()) {
-			elems.push_back(item);
-		}
-	}
-	return elems;
-}
+/* std::vector<std::string> ConfigParser::split(const std::string &s, char delim) { */
+/* 	std::vector<std::string> elems; */
+/* 	std::stringstream ss(s); */
+/* 	std::string item; */
+/* 	while (getline(ss, item, delim)) { */
+/* 		if (!item.empty()) { */
+/* 			elems.push_back(item); */
+/* 		} */
+/* 	} */
+/* 	return elems; */
+/* } */
 
-char ConfigParser::char_after_spaces(std::string str) {
-	for (int i = 0; str.at(i); i++) {
-		if (!(std::isspace(str.at(i)) && str.at(i) != '\n'))
-			return str.at(i);
-	}
-	return '\0';
-}
+/* char ConfigParser::char_after_spaces(std::string str) { */
+/* 	for (int i = 0; str.at(i); i++) { */
+/* 		if (!(std::isspace(str.at(i)) && str.at(i) != '\n')) */
+/* 			return str.at(i); */
+/* 	} */
+/* 	return '\0'; */
+/* } */
 
 // スペースと改行だけの行、コメント行をvectorからdelete
 // スペースと改行だけの時にエラー isspaceの部分見直し
@@ -88,7 +139,7 @@ char ConfigParser::char_after_spaces(std::string str) {
 /* } */
 
 //syamaさんのやり方 後ほどリファクター
-std::vector<std::string> ConfigParser::isspace_split(std::string str) 
+std::vector<std::string> ConfigParser::isspaceSplit(std::string str) 
 {
 	std::vector<std::string> tokens;
 	size_t i = 0;
