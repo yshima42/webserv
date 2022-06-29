@@ -31,6 +31,9 @@ class ConfigParser
 		std::vector< ServerConfig > serverconfigs_;
 		
 		//std::vector<std::string> tokenize(std::vector<std::string> file_content);
+		void parseLocation(LocationConfig &location, std::vector<std::string>::iterator &it);
+		void parseErrorPages(ServerConfig &server, std::vector<std::string>::iterator &it);
+		void parseRoot(ServerConfig &server, std::vector<std::string>::iterator &it);
 		void parseServerName(ServerConfig &server, std::vector<std::string>::iterator &it);
 		void parseListen(ServerConfig &server, std::vector<std::string>::iterator &it);
 		void parseServer(ServerConfig &server, std::vector<std::string>::iterator &it);

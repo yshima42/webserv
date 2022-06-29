@@ -47,7 +47,6 @@ void ConfigParser::parseTokens(std::vector<std::string> tokens)
 			throw -1;
 		}
 	}
-	std::cout << serverconfigs_[0].names_[2] << std::endl;
 }
 
 int posSemicolon(std::string str)
@@ -88,6 +87,35 @@ void ConfigParser::parseServerName(ServerConfig &server, std::vector<std::string
 	it--;
 }
 
+void ConfigParser::parseRoot(ServerConfig &server, std::vector<std::string>::iterator &it)
+{
+	server.root_ = it->substr(0, posSemicolon(*it));
+}
+
+void ConfigParser::parseErrorPages(ServerConfig &server, std::vector<std::string>::iterator &it)
+{
+	int num = countContents(it);
+	for (int i = 0; i < num; ++i, ++it) {
+		//std::cout << *it << std::endl;
+		if (posSemicolon(*it) != -1) {
+			server.error_pages_.push_back(it->substr(0, posSemicolon(*it)));
+		} else {
+			server.error_pages_.push_back(*it);
+		}
+	}
+	it--;
+}
+
+void ConfigParser::parseLocation(LocationConfig &location, std::vector<std::string>::iterator &it)
+{
+
+
+	(void)location;
+	location.uri_ = *it;
+	//std::cout << *it << std::endl;
+
+}
+
 void ConfigParser::parseServer(ServerConfig &server, std::vector<std::string>::iterator &it)
 {
 	for (; *it != "}"; ++it) {
@@ -95,13 +123,19 @@ void ConfigParser::parseServer(ServerConfig &server, std::vector<std::string>::i
 			parseListen(server, ++it); 
 		} else if (*it == "server_name") {
 			parseServerName(server, ++it); 
-		}
-		/* } else if (*it == "root") { */
-		/* 	parseRoot(); */
-		/* } else if (*it == "location") { */
-		/* 	parseLocation(); */
+		} else if (*it == "root") {
+			parseRoot(server, ++it); 
+		/* } else if (*it == "error_pages_") { */
+		/* 	parseErrorPages(server, ++it); */
 		/* } */
-	}
+		} else if (*it == "location") {
+				LocationConfig  location;
+				parseLocation(location, ++it);
+				server.locations_.push_back(location);
+		} else {
+			throw -1;
+		}
+}
 }
 
 std::string ConfigParser::readFile(std::string file) {
